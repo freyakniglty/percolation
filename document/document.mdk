@@ -1,12 +1,13 @@
 [INCLUDE=presentation]
 Title         : random walks 算法的改进
-Sub Title     : 
 Author        : Mengxun Tan
 
 Affiliation   : Delta corp.
 Email         : tmx@nb3dx.com>
 Reveal Theme  : sky
 Beamer Theme  : singapore
+Package : [UTF8]ctex
+
 
 [TITLE]
 
@@ -210,6 +211,3 @@ $c_{i,j} = \frac {D_{\partial S_i\cap\partial S_j}/L_{\partial S_i\cap\partial S
 
 ## Thanks for looking :-)
 
-[slide]: http://research.microsoft.com/en-us/um/people/daan/madoko/samples/slidedemo/out/slidedemo.html
-[slide-mdk]: https://www.madoko.net/editor.html?#url=http://research.microsoft.com/en-us/um/people/daan/madoko/samples/slidedemo/slidedemo.mdk&options={"delayedUpdate":"true"}
-[slide-pdf]: http://research.microsoft.com/en-us/um/people/daan/madoko/samples/slidedemo/out/slidedemo.pdf
