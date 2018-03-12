@@ -1,9 +1,9 @@
 [INCLUDE=presentation]
-Title         : Demo presentation in Madoko
-Sub Title     : In both HTML and PDF
-Author        : Daan Leijen
-Affiliation   : Microsoft Research
-Email         : daan@microsoft.com
+Title         : random walks 算法的改进
+Sub Title     : 
+Author        : Mengxun Tan
+Affiliation   : Delta corp.
+Email         : tmx@nb3dx.com>
 Reveal Theme  : sky
 Beamer Theme  : singapore
 
@@ -13,13 +13,11 @@ Beamer Theme  : singapore
 
 [TOC]
 
-# random walks 算法的改进
 
 
 
 
-
-## 算法简介与回顾
+# 算法简介与回顾
 
 `random walks`的核心思想是：先选择一个集合的种子点（用户输入）。对于每一个非种子点，决定它到每一个种子点的概率，这个由它到每个邻域的概率决定。当每个非种子点被标记上不同种子点的标签后，分割完成。
 
@@ -38,15 +36,10 @@ Beamer Theme  : singapore
 
 ## 与电路的势能进行类比
 ![electricalcircuit]
-
 [electricalcircuit]: images/electricalcircuit.png "electricalcircuit" { width:auto; max-width:60% }
-~ Begin Columns
-~ Column { width:50% }
 要寻求randomwalker到一个种子点的解，可以由解决Dirichlet带有边界条件的问题来得到。combinatorial Dirichlet 问题在任意图像上的解产生于结点的电动势能（electric potentials）在电路上的分布和边界条件。
-~
-~ Column
 
-
+### 
 
 
 
@@ -67,7 +60,26 @@ Beamer Theme  : singapore
 
 主要目的：减小图像噪音，进行相似聚合，让分割更准确。
 
-## 整体分割
+### Toboggan 分割
+
+将原图分割为细小的区域。
+基本思想是，计算梯度。计算每一个像素点滑向邻域梯度最小的位置的方向。显然，一些像素点可以代表区域梯度场的最小值。如果像素点都滑向同一个区域最小值点，则这些像素点形成一个区域。 
+
+
+
+- 计算图像的梯度场
+- 获取每一个像素点的八个邻域，找出哪一个是最小梯度。继续获取这些像素点的八个邻域信息，直到梯度最小，并且标记这个点。
+- 将滑向相同最小值的像素点归为一个区域。
+- 查补没有标记的像素点，反复上面的操作，直到所有像素点都标记了。
+
+## next
+![toboggan]
+
+[toboggan]: images/toboggan.png "toboggan" { width:auto; max-width:90% }
+
+## 改进权重
+
+
 
 
 
@@ -90,15 +102,7 @@ Press down or up to navigate.
 
 Use `columns` to put blocks next to each other:
 
-~ Begin Columns
-~ Column { width:50% }
-A monarch butterfly (shown to the right)
-spends the winter in Mexico.
-~
-~ Column
-![butterfly]
-~
-~ End Columns
+
 
 [butterfly]: images/butterfly.png "A Monarch butterfly" { width:280px; vertical-align:middle }
 
