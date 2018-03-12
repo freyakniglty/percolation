@@ -43,9 +43,10 @@ Beamer Theme  : singapore
 
 
 
-## 可以进行改进的一些步骤
+# 可以进行改进的一些步骤
 
 * 前处理(pre-processing)
+* 种子点选取
 * 定义概率的改进。
 通过自定义边的权重$w_{ij}$ 来重新定义$p_{i,k}$
 * 后处理(post-processing)
@@ -56,11 +57,11 @@ Beamer Theme  : singapore
 * 高斯滤波过滤掉不需要的信息。进行整体分割。
 * Toboggan 分割
 * 创建一个尺度空间
-* 用WTA进行相似度检索
+
 
 主要目的：减小图像噪音，进行相似聚合，让分割更准确。
 
-### Toboggan 分割
+## Toboggan 分割
 
 将原图分割为细小的区域。
 基本思想是，计算梯度。计算每一个像素点滑向邻域梯度最小的位置的方向。显然，一些像素点可以代表区域梯度场的最小值。如果像素点都滑向同一个区域最小值点，则这些像素点形成一个区域。 
@@ -77,7 +78,124 @@ Beamer Theme  : singapore
 
 [toboggan]: images/toboggan.png "toboggan" { width:auto; max-width:90% }
 
-## 改进权重
+## 创建一个尺度空间
+
+中心思想是，把低等级的或者说精细的特征逐渐抹掉，直到只剩下大尺度的特征。
+
+这是因为，在粗糙尺度上，图像消除了噪声和精细的纹理。
+
+$S = \{ i[x,y]*f(x,y|\sigma_n):\sigma_n = 0,1,2,...,2^{N-1}\}$
+
+这里的图像$I[x,y]$ 被算子$f(x,y|\sigma_n)$做卷积。
+~ Equation  {#eq-gaussian}
+f(x,y|\sigma_n) = \frac{1}{\sqrt{2\pi\sigma^2_n}}\exp \{\frac{-(x^2+y^2)}{2\sigma^2_n}\}
+~
+我们可以增强random walks 的图像，创建6个连接的图像堆叠在一起。如后图
+
+## next1
+![SSRW]
+[SSRW]: images/SSRW.png "SSRW" { width:auto; max-width:90% }
+##next2
+通过对每一层的上下连接，我们可以将没有噪音的粗糙尺度和有噪音的但是更加精确的尺度进行交互。这样就能保证细节的表达以及减少噪声和纹理对分割的影响。
+在不同图层上实现random walks 算法，得到N个概率图像。我们的方法是结合每一个层次的图像。
+
+所以有，
+~ Equation  {#eq-gaussian}
+P = \{P[x,y|n]:n=0,1,2,...,N-1\}
+~
+
+求概率的几何平均值对每一个像素点，
+~ Equation  {#eq-gaussian}
+P[x,y] = (\prod^{N-1}_{n=0}P[x,y|n])^{1/N}
+~
+
+
+
+## 种子点选取
+* 用WTA进行相似度检索
+* 粗略选取
+* 精细选取
+
+##  用WTA进行相似度检索
+[WTA]
+[WTA]:http://blog.csdn.net/app_12062011/article/details/53462563
+~ Equation  {#eq-gaussian}
+X_n|X_1,...,X_{n-1} = \begin{cases}X_i&with\ probability\ \frac{1}{n-1+\alpha\\ }\\new\ draw\ from\ G_0& with\ probability\ \frac{\alpha}{n-1+\alpha}\end{cases}
+~
+如果一个新的样本与前面的样本属于同一类则被丢弃，如果一个样本与前面的不同，则作为新的种子点。概率是作为种子点的概率。
+
+## 粗略选取
+
+使用与k-means相似的聚合方式选择种子点。
+
+$D(f_i,f_j)$ 是$f_i$ 到 $f_j$ 的最短路径。
+
+$s_1,s_2,...,s_n$ 是已经选好的种子点。
+
+$s_{n+1}=  \arg\max_{f_k\in F}\{\min_{i=1,...,n} D(f_k,s_i)\}$
+
+以上公式表面了如何选择第n+1个种子点。 
+
+当$s_{n+1}$ 到最近的种子点的D显著减小时，种子选取结束。
+
+## 精细选取
+
+[Feature sensitive sampling](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.21.876)
+
+
+## 改进边的权重
+
+原始的高斯方程计算权重为：
+
+~ Equation  {#eq-gaussian}
+W_{ij} = \exp(-\beta(g_i-g_j)^2)
+~
+Ali kemal sinop 改进为：
+~ Begin Framed { padding:1ex; margin-top:1ex }
+~ Equation  {#eq-gaussian}
+W_{ij} = \exp(\beta(g_i-g_j)^2-(h_i-h_j)^2)
+~
+~ End Framed
+$h_i$ 是空间坐标。
+
+
+
+然而以上并不是比较理想的方法。可以把经toboggan分割得到的小的区域看做质点，像素的平均值当作质量。假设受到了万有引力。
+
+万有引力公式为：$\vec Gravity_{i,j} = \frac{G_{m_im_j\vec r}}{||\vec r||^3}$
+
+其中$m_i,m_j$ 是i, j 区域的平均像素。
+
+$||\vec r|| = ||X_i - X_j||^2$
+
+$X_i,X_j$ 是结点i,j的位置。
+
+则有
+~ Begin Framed { padding:1ex; margin-top:1ex }
+~ Equation  {#eq-gaussian}
+W_{ij} = \exp(-Gravity^2_{ij}/\sigma_G)
+~
+~ End Framed
+
+## 后处理
+### 区域融合
+分割完成后，有相邻的两个区域$S_i,S_j$
+
+标记，$\partial S_i\cap\partial S_j$ 为两个区域的共同边界。$\partial S_i\cup\partial S_j$ 为两个区域的联合边界。
+
+标记，$D_{\partial S_i\cap\partial S_j} = \sum_{e\in\partial S_i\cap\partial S_j}|e|d_e$ ，
+
+其中|e| 是 边的长度，$d_e$ 是两个与e相邻的面的距离。
+
+定义$L_{\partial S_i\cap\partial S_j} = \sum_{e\in\partial S_i\cap\partial S_j}|e|$ 为共同边的总长度。
+
+$，D_{\partial S_i\cap\partial S_j}，L_{\partial S_i\cap\partial S_j}$ 
+
+然后定义融合消耗 $c_{i,j}$ 为：
+
+$c_{i,j} = \frac {D_{\partial S_i\cap\partial S_j}/L_{\partial S_i\cap\partial S_j}}{D_{\partial S_i\cup\partial S_j}/L_{\partial S_i\cup\partial S_j}}$  
+
+选择最小的$c_{i,j}$ 将其中的两个区域融合，然后更新新的{$c_{i,j}$} 向量。当最小的$c_{i,j}$ 大约为0.5的时候融合终止。
 
 
 
