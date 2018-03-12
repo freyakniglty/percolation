@@ -76,7 +76,7 @@ Beamer Theme  : singapore
 ##  分割
 ![toboggan]
 
-[toboggan]: images/toboggan.png "toboggan" { width:auto; max-width:90% }
+[toboggan]: images/toboggan.png "toboggan" { width:auto; max-width:100% }
 
 
 ## 创建一个尺度空间
