@@ -2,6 +2,7 @@
 Title         : random walks 算法的改进
 Sub Title     : 
 Author        : Mengxun Tan
+
 Affiliation   : Delta corp.
 Email         : tmx@nb3dx.com>
 Reveal Theme  : sky
@@ -21,7 +22,6 @@ Beamer Theme  : singapore
 
 `random walks`的核心思想是：先选择一个集合的种子点（用户输入）。对于每一个非种子点，决定它到每一个种子点的概率，这个由它到每个邻域的概率决定。当每个非种子点被标记上不同种子点的标签后，分割完成。
 
-
 ~ Begin Framed { padding:1ex; margin-top:1ex }
 设种子点为$s_1,s_2,...,s_n$,非种子点为$f_1,f_2,..,f_m$.对于一个非种子点$f_k$对应的邻域概率为$p_{k,1},p_{k,2},...,p_{k,w}.w$为邻域个数。则有：
 
@@ -39,11 +39,10 @@ Beamer Theme  : singapore
 [electricalcircuit]: images/electricalcircuit.png "electricalcircuit" { width:auto; max-width:60% }
 要寻求randomwalker到一个种子点的解，可以由解决Dirichlet带有边界条件的问题来得到。combinatorial Dirichlet 问题在任意图像上的解产生于结点的电动势能（electric potentials）在电路上的分布和边界条件。
 
-### 
 
 
 
-# 可以进行改进的一些步骤
+## 可以进行改进的一些步骤
 
 * 前处理(pre-processing)
 * 种子点选取
@@ -52,7 +51,7 @@ Beamer Theme  : singapore
 * 后处理(post-processing)
 
 
-## 前处理的改进
+# 前处理的改进
 
 * 高斯滤波过滤掉不需要的信息。进行整体分割。
 * Toboggan 分割
@@ -73,10 +72,12 @@ Beamer Theme  : singapore
 - 将滑向相同最小值的像素点归为一个区域。
 - 查补没有标记的像素点，反复上面的操作，直到所有像素点都标记了。
 
-## next
+
+##  分割
 ![toboggan]
 
 [toboggan]: images/toboggan.png "toboggan" { width:auto; max-width:90% }
+
 
 ## 创建一个尺度空间
 
@@ -111,7 +112,7 @@ P[x,y] = (\prod^{N-1}_{n=0}P[x,y|n])^{1/N}
 
 
 
-## 种子点选取
+# 种子点选取
 * 用WTA进行相似度检索
 * 粗略选取
 * 精细选取
@@ -141,7 +142,7 @@ $s_{n+1}=  \arg\max_{f_k\in F}\{\min_{i=1,...,n} D(f_k,s_i)\}$
 [Feature sensitive sampling](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.21.876)
 
 
-## 改进边的权重
+# 改进边的权重
 
 原始的高斯方程计算权重为：
 
@@ -156,7 +157,7 @@ W_{ij} = \exp(\beta(g_i-g_j)^2-(h_i-h_j)^2)
 ~ End Framed
 $h_i$ 是空间坐标。
 
-
+## 万有引力类似
 
 然而以上并不是比较理想的方法。可以把经toboggan分割得到的小的区域看做质点，像素的平均值当作质量。假设受到了万有引力。
 
@@ -175,9 +176,10 @@ W_{ij} = \exp(-Gravity^2_{ij}/\sigma_G)
 ~
 ~ End Framed
 
-## 后处理
+# 后处理
+区域融合
 
-### 区域融合
+## 区域融合
 
 分割完成后，有相邻的两个区域 $S_i,S_j$
 
