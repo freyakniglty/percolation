@@ -6,7 +6,7 @@ Affiliation   : Delta corp.
 Email         : tmx@nb3dx.com>
 Reveal Theme  : sky
 Beamer Theme  : singapore
-Package : [UTF8]ctex
+Package : CJK
 
 
 [TITLE]
@@ -14,12 +14,13 @@ Package : [UTF8]ctex
 # Content
 
 [TOC]
+[BIB]
 
 
 
 
 
-# 1. 算法简介与回顾
+# 0. 算法简介与回顾
 
 `random walks`的核心思想是：先选择一个集合的种子点（用户输入）。对于每一个非种子点，决定它到每一个种子点的概率，这个由它到每个邻域的概率决定。当每个非种子点被标记上不同种子点的标签后，分割完成。
 
@@ -35,7 +36,7 @@ Package : [UTF8]ctex
 ~
 ~ End Framed
 
-## 1.1与电路的势能进行类比
+## 0.1 与电路的势能进行类比
 ![electricalcircuit]
 [electricalcircuit]: images/electricalcircuit.png "electricalcircuit" { width:auto; max-width:60% }
 要寻求randomwalker到一个种子点的解，可以由解决Dirichlet带有边界条件的问题来得到。combinatorial Dirichlet 问题在任意图像上的解产生于结点的电动势能（electric potentials）在电路上的分布和边界条件。
@@ -43,7 +44,7 @@ Package : [UTF8]ctex
 
 
 
-## 1.2可以进行改进的一些步骤
+## 0.2 可以进行改进的一些步骤
 
 * 前处理(pre-processing)
 * 种子点选取
@@ -52,7 +53,7 @@ Package : [UTF8]ctex
 * 后处理(post-processing)
 
 
-## 2.1前处理的改进
+# 1. 前处理的改进
 
 * 高斯滤波过滤掉不需要的信息。进行整体分割。
 * Toboggan 分割
@@ -61,7 +62,7 @@ Package : [UTF8]ctex
 
 主要目的：减小图像噪音，进行相似聚合，让分割更准确。
 
-## 2.2Toboggan 分割
+## 1.1 Toboggan 分割
 
 将原图分割为细小的区域。
 基本思想是，计算梯度。计算每一个像素点滑向邻域梯度最小的位置的方向。显然，一些像素点可以代表区域梯度场的最小值。如果像素点都滑向同一个区域最小值点，则这些像素点形成一个区域。 
@@ -80,7 +81,7 @@ Package : [UTF8]ctex
 [toboggan]: images/toboggan.png "toboggan" { width:auto; max-width:100% }
 
 
-## 2.3创建一个尺度空间
+## 1.2 创建一个尺度空间
 
 中心思想是，把低等级的或者说精细的特征逐渐抹掉，直到只剩下大尺度的特征。
 
@@ -113,18 +114,19 @@ P[x,y] = (\prod^{N-1}_{n=0}P[x,y|n])^{1/N}
 
 
 
-# 3.种子点选取
+# 2. 种子点选取
 * 用WTA进行相似度检索
 * 粗略选取
 * 精细选取
 
-##  3.1用WTA进行相似度检索
+##  2.1 用WTA进行相似度检索
+
 [WTA]
 [WTA]:http://blog.csdn.net/app_12062011/article/details/53462563
 
 如果一个新的样本与前面的样本属于同一类则被丢弃，如果一个样本与前面的不同，则作为新的种子点。概率是作为种子点的概率。
 
-## 3.2粗略选取
+## 2.2 粗略选取
 
 使用与k-means相似的聚合方式选择种子点。
 
@@ -138,12 +140,16 @@ $s_{n+1}=  \arg\max_{f_k\in F}\{\min_{i=1,...,n} D(f_k,s_i)\}$
 
 当$s_{n+1}$ 到最近的种子点的D显著减小时，种子选取结束。
 
-## 3.3精细选取
+## 2.3 精细选取
+
+![fine selecting]
+
+[fine selecting]: images/fine-selecting.png "fine selecting" { width:auto; max-width:90% }
 
 [Feature sensitive sampling](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.21.876)
 
 
-# 4.改进边的权重
+# 3. 改进边的权重
 
 原始的高斯方程计算权重为：
 
@@ -158,7 +164,7 @@ W_{ij} = \exp(\beta(g_i-g_j)^2-(h_i-h_j)^2)
 ~ End Framed
 $h_i$ 是空间坐标。
 
-## 4.1万有引力类似
+## 3.1 万有引力类似
 
 然而以上并不是比较理想的方法。可以把经toboggan分割得到的小的区域看做质点，像素的平均值当作质量。假设受到了万有引力。
 
@@ -177,10 +183,10 @@ W_{ij} = \exp(-Gravity^2_{ij}/\sigma_G)
 ~
 ~ End Framed
 
-# 5.后处理
+# 4. 后处理
 区域融合
 
-## 5.1区域融合
+## 4.1 区域融合
 
 分割完成后，有相邻的两个区域 $S_i,S_j$
 
