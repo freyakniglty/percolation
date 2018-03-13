@@ -1,6 +1,7 @@
 [INCLUDE=presentation]
 Title         : random walks 算法的改进
 Author        : 
+Bibliography: segmentation.bib
 
 Affiliation   : Delta corp.
 Email         : tmx@nb3dx.com>
@@ -14,7 +15,7 @@ Package : CJK
 # Content
 
 [TOC]
-[BIB]
+
 
 
 
@@ -22,7 +23,7 @@ Package : CJK
 
 # 0. 算法简介与回顾
 
-`random walks`的核心思想是：先选择一个集合的种子点（用户输入）。对于每一个非种子点，决定它到每一个种子点的概率，这个由它到每个邻域的概率决定。当每个非种子点被标记上不同种子点的标签后，分割完成。
+`random walks`的核心思想是：先选择一个集合的种子点（用户输入）。对于每一个非种子点，决定它到每一个种子点的概率，这个由它到每个邻域的概率决定。当每个非种子点被标记上不同种子点的标签后，分割完成。[@lai2009rapid]
 
 ~ Begin Framed { padding:1ex; margin-top:1ex }
 设种子点为$s_1,s_2,...,s_n$,非种子点为$f_1,f_2,..,f_m$.对于一个非种子点$f_k$对应的邻域概率为$p_{k,1},p_{k,2},...,p_{k,w}.w$为邻域个数。则有：
@@ -39,7 +40,7 @@ Package : CJK
 ## 0.1 与电路的势能进行类比
 ![electricalcircuit]
 [electricalcircuit]: images/electricalcircuit.png "electricalcircuit" { width:auto; max-width:60% }
-要寻求randomwalker到一个种子点的解，可以由解决Dirichlet带有边界条件的问题来得到。combinatorial Dirichlet 问题在任意图像上的解产生于结点的电动势能（electric potentials）在电路上的分布和边界条件。
+要寻求randomwalker到一个种子点的解，可以由解决Dirichlet带有边界条件的问题来得到。combinatorial Dirichlet 问题在任意图像上的解产生于结点的电动势能（electric potentials）在电路上的分布和边界条件。[@grady2006random]
 
 
 
@@ -72,7 +73,7 @@ Package : CJK
 - 计算图像的梯度场
 - 获取每一个像素点的八个邻域，找出哪一个是最小梯度。继续获取这些像素点的八个邻域信息，直到梯度最小，并且标记这个点。
 - 将滑向相同最小值的像素点归为一个区域。
-- 查补没有标记的像素点，反复上面的操作，直到所有像素点都标记了。
+- 查补没有标记的像素点，反复上面的操作，直到所有像素点都标记了。[@li2008new]
 
 
 ## next
@@ -83,7 +84,7 @@ Package : CJK
 
 ## 1.2 创建一个尺度空间
 
-中心思想是，把低等级的或者说精细的特征逐渐抹掉，直到只剩下大尺度的特征。
+中心思想是，把低等级的或者说精细的特征逐渐抹掉，直到只剩下大尺度的特征。[@rzeszutek2009image]
 
 这是因为，在粗糙尺度上，图像消除了噪声和精细的纹理。
 
@@ -119,14 +120,9 @@ P[x,y] = (\prod^{N-1}_{n=0}P[x,y|n])^{1/N}
 * 粗略选取
 * 精细选取
 
-##  2.1 用WTA进行相似度检索
 
-[WTA]
-[WTA]:http://blog.csdn.net/app_12062011/article/details/53462563
 
-如果一个新的样本与前面的样本属于同一类则被丢弃，如果一个样本与前面的不同，则作为新的种子点。概率是作为种子点的概率。
-
-## 2.2 粗略选取
+## 2.1 粗略选取
 
 使用与k-means相似的聚合方式选择种子点。
 
@@ -136,17 +132,17 @@ $s_1,s_2,...,s_n$ 是已经选好的种子点。
 
 $s_{n+1}=  \arg\max_{f_k\in F}\{\min_{i=1,...,n} D(f_k,s_i)\}$
 
-以上公式表面了如何选择第n+1个种子点。 
+以上公式表面了如何选择第n+1个种子点。 [@lai2009rapid]
 
 当$s_{n+1}$ 到最近的种子点的D显著减小时，种子选取结束。
 
-## 2.3 精细选取
+## 2.2 精细选取
 
 ![fine selecting]
 
 [fine selecting]: images/fine-selecting.png "fine selecting" { width:auto; max-width:90% }
 
-[Feature sensitive sampling](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.21.876)
+[Feature sensitive sampling](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.21.876)[@lai2009rapid]
 
 
 # 3. 改进边的权重
@@ -166,7 +162,7 @@ $h_i$ 是空间坐标。
 
 ## 3.1 万有引力类似
 
-然而以上并不是比较理想的方法。可以把经toboggan分割得到的小的区域看做质点，像素的平均值当作质量。假设受到了万有引力。
+然而以上并不是比较理想的方法。可以把经toboggan分割得到的小的区域看做质点，像素的平均值当作质量。假设受到了万有引力。[@li2008new]
 
 万有引力公式为：$\vec Gravity_{i,j} = \frac{G_{m_im_j\vec r}}{||\vec r||^3}$
 
@@ -204,13 +200,20 @@ $，D_{\partial S_i\cap\partial S_j}，L_{\partial S_i\cap\partial S_j}$
 
 $c_{i,j} = \frac {D_{\partial S_i\cap\partial S_j}/L_{\partial S_i\cap\partial S_j}}{D_{\partial S_i\cup\partial S_j}/L_{\partial S_i\cup\partial S_j}}$  
 
-选择最小的$c_{i,j}$ 将其中的两个区域融合，然后更新新的{$c_{i,j}$} 向量。当最小的$c_{i,j}$ 大约为0.5的时候融合终止。
+选择最小的$c_{i,j}$ 将其中的两个区域融合，然后更新新的{$c_{i,j}$} 向量。当最小的$c_{i,j}$ 大约为0.5的时候融合终止。[@lai2009rapid]
+
+## 4.1
+![fine selecting]
 
 
 
 
 
 
+
+
+## References   {-}
+[BIB]
 
 
 
